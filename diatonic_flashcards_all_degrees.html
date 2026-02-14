@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diatonic Flashcards (All Degrees)</title>
+<style>
+body { font-family: system-ui, sans-serif; max-width: 680px; margin: 40px auto; padding: 0 16px; }
+.card { border: 1px solid #ddd; border-radius: 14px; padding: 20px; }
+h1 { font-size: 18px; margin-bottom: 10px; }
+select, button { font-size: 16px; padding: 10px; margin-top: 10px; }
+.row { display: flex; gap: 10px; }
+button { flex: 1; }
+.q { font-size: 24px; margin-top: 14px; white-space: pre-line; }
+.a { font-size: 24px; margin-top: 14px; visibility: hidden; }
+</style>
+</head>
+<body>
+<div class="card">
+<h1>ダイアトニック・フラッシュカード</h1>
+
+<label>キー選択</label><br>
+<select id="keySelect">
+<option value="ALL">全キー</option>
+<option>C</option><option>G</option><option>D</option><option>A</option>
+<option>E</option><option>B</option><option>F#</option><option>C#</option>
+<option>F</option><option>Bb</option><option>Eb</option><option>Ab</option>
+</select>
+
+<div class="q" id="question"></div>
+<div class="a" id="answer"></div>
+
+<div class="row">
+<button onclick="toggle()">答え</button>
+<button onclick="nextCard()">次へ</button>
+</div>
+</div>
+
+<script>
+// 全キーのダイアトニック（Major）
+const table = {
+C:  ["C","Dm","Em","F","G","Am","Bdim"],
+G:  ["G","Am","Bm","C","D","Em","F#dim"],
+D:  ["D","Em","F#m","G","A","Bm","C#dim"],
+A:  ["A","Bm","C#m","D","E","F#m","G#dim"],
+E:  ["E","F#m","G#m","A","B","C#m","D#dim"],
+B:  ["B","C#m","D#m","E","F#","G#m","A#dim"],
+"F#":["F#","G#m","A#m","B","C#","D#m","E#dim"],
+"C#":["C#","D#m","E#m","F#","G#","A#m","B#dim"],
+F:  ["F","Gm","Am","Bb","C","Dm","Edim"],
+Bb: ["Bb","Cm","Dm","Eb","F","Gm","Adim"],
+Eb: ["Eb","Fm","Gm","Ab","Bb","Cm","Ddim"],
+Ab: ["Ab","Bbm","Cm","Db","Eb","Fm","Gdim"]
+};
+
+const degrees = ["I","ii","iii","IV","V","vi","vii°"];
+
+let currentKey;
+let currentDegree;
+
+function pickKey() {
+const sel = document.getElementById("keySelect").value;
+if (sel === "ALL") {
+const keys = Object.keys(table);
+return keys[Math.floor(Math.random()*keys.length)];
+}
+return sel;
+}
+
+function nextCard() {
+currentKey = pickKey();
+currentDegree = Math.floor(Math.random()*7);
+
+document.getElementById("question").textContent =
+`Key: ${currentKey} Major\n${degrees[currentDegree]} は何？`;
+
+document.getElementById("answer").textContent =
+table[currentKey][currentDegree];
+
+document.getElementById("answer").style.visibility = "hidden";
+}
+
+function toggle() {
+const a = document.getElementById("answer");
+a.style.visibility = (a.style.visibility === "visible") ? "hidden" : "visible";
+}
+
+nextCard();
+</script>
+</body>
+</html>
