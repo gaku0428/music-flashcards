@@ -5,98 +5,116 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Diatonic Flashcards (All Degrees)</title>
 <style>
-body { font-family: system-ui, sans-serif; max-width: 680px; margin: 40px auto; padding: 0 16px; }
-.card { border: 1px solid #ddd; border-radius: 14px; padding: 20px; }
-h1 { font-size: 18px; margin-bottom: 10px; }
-select, button { font-size: 16px; padding: 10px; margin-top: 10px; }
-.row { display: flex; gap: 10px; }
-button { flex: 1; }
-.q { font-size: 24px; margin-top: 14px; white-space: pre-line; }
-.a { font-size: 24px; margin-top: 14px; visibility: hidden; }
+  body { font-family: system-ui, sans-serif; max-width: 680px; margin: 40px auto; padding: 0 16px; }
+  .card { border: 1px solid #ddd; border-radius: 14px; padding: 20px; }
+  h1 { font-size: 18px; margin-bottom: 10px; }
+  select, button { font-size: 16px; padding: 10px; margin-top: 10px; }
+  .row { display: flex; gap: 10px; }
+  button { flex: 1; }
+  .q { font-size: 24px; margin-top: 14px; white-space: pre-line; }
+  .a { font-size: 24px; margin-top: 14px; visibility: hidden; }
+  .err { font-size: 14px; margin-top: 10px; color: #b00020; white-space: pre-line; }
 </style>
 </head>
 <body>
 <div class="card">
-<h1>ダイアトニック・フラッシュカード</h1>
+  <h1>ダイアトニック・フラッシュカード</h1>
 
-<label>キー選択</label><br>
-<select id="keySelect">
-  <option value="ALL">全キー</option>
-  <option>F</option>
-  <option>C</option>
-  <option>G</option>
-  <option>D</option>
-  <option>A</option>
-  <option>E</option>
-  <option>B</option>
-  <option>Gb</option>
-  <option>Db</option>
-  <option>Ab</option>
-  <option>Eb</option>
-  <option>Bb</option>
-</select>
+  <label for="keySelect">キー選択</label><br>
+  <select id="keySelect">
+    <option value="ALL">全キー</option>
+    <option value="F">F</option>
+    <option value="C">C</option>
+    <option value="G">G</option>
+    <option value="D">D</option>
+    <option value="A">A</option>
+    <option value="E">E</option>
+    <option value="B">B</option>
+    <option value="Gb">Gb</option>
+    <option value="Db">Db</option>
+    <option value="Ab">Ab</option>
+    <option value="Eb">Eb</option>
+    <option value="Bb">Bb</option>
+  </select>
 
+  <div class="q" id="question"></div>
+  <div class="a" id="answer"></div>
+  <div class="err" id="error"></div>
 
-<div class="q" id="question"></div>
-<div class="a" id="answer"></div>
-
-<div class="row">
-<button onclick="toggle()">答え</button>
-<button onclick="nextCard()">次へ</button>
-</div>
+  <div class="row">
+    <button id="toggleBtn" onclick="toggle()">答え</button>
+    <button onclick="nextCard()">次へ</button>
+  </div>
 </div>
 
 <script>
-// 全キーのダイアトニック（Major）
-const table = {
-  F:  ["F","Gm","Am","Bb","C","Dm","Edim"],
-  C:  ["C","Dm","Em","F","G","Am","Bdim"],
-  G:  ["G","Am","Bm","C","D","Em","F#dim"],
-  D:  ["D","Em","F#m","G","A","Bm","C#dim"],
-  A:  ["A","Bm","C#m","D","E","F#m","G#dim"],
-  E:  ["E","F#m","G#m","A","B","C#m","D#dim"],
-  B:  ["B","C#m","D#m","E","F#","G#m","A#dim"],
-  Gb: ["Gb","Abm","Bbm","Cb","Db","Ebm","Fdim"],
-  Db: ["Db","Ebm","Fm","Gb","Ab","Bbm","Cdim"],
-  Ab: ["Ab","Bbm","Cm","Db","Eb","Fm","Gdim"],
-  Eb: ["Eb","Fm","Gm","Ab","Bb","Cm","Ddim"],
-  Bb: ["Bb","Cm","Dm","Eb","F","Gm","Adim"]
-};
+  // 五度圏（指定の並び）
+  const circleKeys = ["F","C","G","D","A","E","B","Gb","Db","Ab","Eb","Bb"];
 
+  // Majorキーのダイアトニック（トライアド）
+  // 配列の順番：I, ii, iii, IV, V, vi, vii°
+  const table = {
+    F:  ["F","Gm","Am","Bb","C","Dm","Edim"],
+    C:  ["C","Dm","Em","F","G","Am","Bdim"],
+    G:  ["G","Am","Bm","C","D","Em","F#dim"],
+    D:  ["D","Em","F#m","G","A","Bm","C#dim"],
+    A:  ["A","Bm","C#m","D","E","F#m","G#dim"],
+    E:  ["E","F#m","G#m","A","B","C#m","D#dim"],
+    B:  ["B","C#m","D#m","E","F#","G#m","A#dim"],
+    Gb: ["Gb","Abm","Bbm","Cb","Db","Ebm","Fdim"],
+    Db: ["Db","Ebm","Fm","Gb","Ab","Bbm","Cdim"],
+    Ab: ["Ab","Bbm","Cm","Db","Eb","Fm","Gdim"],
+    Eb: ["Eb","Fm","Gm","Ab","Bb","Cm","Ddim"],
+    Bb: ["Bb","Cm","Dm","Eb","F","Gm","Adim"]
+  };
 
-const degrees = ["I","ii","iii","IV","V","vi","vii°"];
+  const degrees = ["I","ii","iii","IV","V","vi","vii°"];
 
-let currentKey;
-let currentDegree;
+  let currentKey = null;
+  let currentDegree = null;
 
-function pickKey() {
-const sel = document.getElementById("keySelect").value;
-if (sel === "ALL") {
-const keys = Object.keys(table);
-return keys[Math.floor(Math.random()*keys.length)];
-}
-return sel;
-}
+  function pickKey() {
+    const sel = document.getElementById("keySelect").value;
+    if (sel === "ALL") {
+      return circleKeys[Math.floor(Math.random() * circleKeys.length)];
+    }
+    return sel;
+  }
 
-function nextCard() {
-currentKey = pickKey();
-currentDegree = Math.floor(Math.random()*7);
+  function nextCard() {
+    currentKey = pickKey();
+    currentDegree = Math.floor(Math.random() * 7);
 
-document.getElementById("question").textContent =
-`Key: ${currentKey} Major\n${degrees[currentDegree]} は何？`;
+    document.getElementById("question").textContent =
+      `Key: ${currentKey} Major\n${degrees[currentDegree]} は何？`;
 
-document.getElementById("answer").textContent =
-table[currentKey][currentDegree];
+    const row = table[currentKey];
+    const errEl = document.getElementById("error");
+    errEl.textContent = "";
 
-document.getElementById("answer").style.visibility = "hidden";
-}
+    if (!row) {
+      document.getElementById("answer").textContent = "";
+      errEl.textContent = `ERROR: table にキー「${currentKey}」がありません。`;
+    } else if (row[currentDegree] === undefined) {
+      document.getElementById("answer").textContent = "";
+      errEl.textContent = `ERROR: table[${currentKey}] に度数 index ${currentDegree} がありません。`;
+    } else {
+      document.getElementById("answer").textContent = row[currentDegree];
+    }
 
-function toggle() {
-const a = document.getElementById("answer");
-a.style.visibility = (a.style.visibility === "visible") ? "hidden" : "visible";
-}
+    document.getElementById("answer").style.visibility = "hidden";
+    document.getElementById("toggleBtn").textContent = "答え";
+  }
 
-nextCard();
+  function toggle() {
+    const a = document.getElementById("answer");
+    const btn = document.getElementById("toggleBtn");
+    const isVisible = (a.style.visibility === "visible");
+    a.style.visibility = isVisible ? "hidden" : "visible";
+    btn.textContent = isVisible ? "答え" : "答えを隠す";
+  }
+
+  nextCard();
 </script>
 </body>
 </html>
