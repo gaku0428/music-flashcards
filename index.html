@@ -9,8 +9,6 @@
   .card { border: 1px solid #ddd; border-radius: 14px; padding: 20px; }
   h1 { font-size: 18px; margin-bottom: 10px; }
   select, button { font-size: 16px; padding: 10px; margin-top: 10px; }
-  .row { display: flex; gap: 10px; }
-  button { flex: 1; }
   .q { font-size: 24px; margin-top: 14px; white-space: pre-line; }
   .a { font-size: 24px; margin-top: 14px; visibility: hidden; }
   .err { font-size: 14px; margin-top: 10px; color: #b00020; white-space: pre-line; }
@@ -41,18 +39,13 @@
   <div class="a" id="answer"></div>
   <div class="err" id="error"></div>
 
-  <div class="row">
-    <button id="toggleBtn" onclick="toggle()">答え</button>
-    <button onclick="nextCard()">次へ</button>
-  </div>
+  <!-- ボタンは常に1つ -->
+  <button id="actionBtn" onclick="action()">答え</button>
 </div>
 
 <script>
-  // 五度圏（指定の並び）
   const circleKeys = ["F","C","G","D","A","E","B","Gb","Db","Ab","Eb","Bb"];
 
-  // Majorキーのダイアトニック（トライアド）
-  // 配列の順番：I, ii, iii, IV, V, vi, vii°
   const table = {
     F:  ["F","Gm","Am","Bb","C","Dm","Edim"],
     C:  ["C","Dm","Em","F","G","Am","Bdim"],
@@ -72,12 +65,11 @@
 
   let currentKey = null;
   let currentDegree = null;
+  let revealed = false; // いま答え表示中か
 
   function pickKey() {
     const sel = document.getElementById("keySelect").value;
-    if (sel === "ALL") {
-      return circleKeys[Math.floor(Math.random() * circleKeys.length)];
-    }
+    if (sel === "ALL") return circleKeys[Math.floor(Math.random() * circleKeys.length)];
     return sel;
   }
 
@@ -102,16 +94,22 @@
       document.getElementById("answer").textContent = row[currentDegree];
     }
 
+    // 初期状態：答えは隠す／ボタンは「答え」
+    revealed = false;
     document.getElementById("answer").style.visibility = "hidden";
-    document.getElementById("toggleBtn").textContent = "答え";
+    document.getElementById("actionBtn").textContent = "答え";
   }
 
-  function toggle() {
-    const a = document.getElementById("answer");
-    const btn = document.getElementById("toggleBtn");
-    const isVisible = (a.style.visibility === "visible");
-    a.style.visibility = isVisible ? "hidden" : "visible";
-    btn.textContent = isVisible ? "答え" : "答えを隠す";
+  function action() {
+    // まだ隠れている → 表示してボタンを「次へ」に
+    if (!revealed) {
+      document.getElementById("answer").style.visibility = "visible";
+      revealed = true;
+      document.getElementById("actionBtn").textContent = "次へ";
+      return;
+    }
+    // 表示中 → 次のカードへ
+    nextCard();
   }
 
   nextCard();
