@@ -21,20 +21,21 @@ button { flex: 1; }
 
 <label>キー選択</label><br>
 <select id="keySelect">
-<option value="ALL">全キー</option>
-<option>F</option>
-<option>C</option>
-<option>G</option>
-<option>D</option>
-<option>A</option>
-<option>E</option>
-<option>B</option>
-<option>Gb</option>
-<option>Db</option>
-<option>Ab</option>
-<option>Eb</option>
-<option>Bb</option>
+  <option value="ALL">全キー</option>
+  <option>F</option>
+  <option>C</option>
+  <option>G</option>
+  <option>D</option>
+  <option>A</option>
+  <option>E</option>
+  <option>B</option>
+  <option>Gb</option>
+  <option>Db</option>
+  <option>Ab</option>
+  <option>Eb</option>
+  <option>Bb</option>
 </select>
+
 
 <div class="q" id="question"></div>
 <div class="a" id="answer"></div>
@@ -48,19 +49,20 @@ button { flex: 1; }
 <script>
 // 全キーのダイアトニック（Major）
 const table = {
-C:  ["C","Dm","Em","F","G","Am","Bdim"],
-G:  ["G","Am","Bm","C","D","Em","F#dim"],
-D:  ["D","Em","F#m","G","A","Bm","C#dim"],
-A:  ["A","Bm","C#m","D","E","F#m","G#dim"],
-E:  ["E","F#m","G#m","A","B","C#m","D#dim"],
-B:  ["B","C#m","D#m","E","F#","G#m","A#dim"],
-"F#":["F#","G#m","A#m","B","C#","D#m","E#dim"],
-"C#":["C#","D#m","E#m","F#","G#","A#m","B#dim"],
-F:  ["F","Gm","Am","Bb","C","Dm","Edim"],
-Bb: ["Bb","Cm","Dm","Eb","F","Gm","Adim"],
-Eb: ["Eb","Fm","Gm","Ab","Bb","Cm","Ddim"],
-Ab: ["Ab","Bbm","Cm","Db","Eb","Fm","Gdim"]
+  F:  ["F","Gm","Am","Bb","C","Dm","Edim"],
+  C:  ["C","Dm","Em","F","G","Am","Bdim"],
+  G:  ["G","Am","Bm","C","D","Em","F#dim"],
+  D:  ["D","Em","F#m","G","A","Bm","C#dim"],
+  A:  ["A","Bm","C#m","D","E","F#m","G#dim"],
+  E:  ["E","F#m","G#m","A","B","C#m","D#dim"],
+  B:  ["B","C#m","D#m","E","F#","G#m","A#dim"],
+  Gb: ["Gb","Abm","Bbm","Cb","Db","Ebm","Fdim"],
+  Db: ["Db","Ebm","Fm","Gb","Ab","Bbm","Cdim"],
+  Ab: ["Ab","Bbm","Cm","Db","Eb","Fm","Gdim"],
+  Eb: ["Eb","Fm","Gm","Ab","Bb","Cm","Ddim"],
+  Bb: ["Bb","Cm","Dm","Eb","F","Gm","Adim"]
 };
+
 
 const degrees = ["I","ii","iii","IV","V","vi","vii°"];
 
