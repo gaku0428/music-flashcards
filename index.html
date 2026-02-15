@@ -2,45 +2,98 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Diatonic Flashcards (All Degrees)</title>
 <style>
-  body { font-family: system-ui, sans-serif; max-width: 680px; margin: 40px auto; padding: 0 16px; }
-  .card { border: 1px solid #ddd; border-radius: 14px; padding: 20px; }
-  h1 { font-size: 18px; margin-bottom: 10px; }
-  select, button { font-size: 16px; padding: 10px; margin-top: 10px; }
+  :root{
+    --pad: 16px;
+    --topH: 50vh;
+    --bottomH: 50vh;
+  }
+  html, body { height: 100%; margin: 0; }
+  body { font-family: system-ui, sans-serif; }
+
+  /* 画面を上下2分割（スマホ向け） */
+  .app {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: var(--pad);
+    padding-bottom: calc(var(--pad) + env(safe-area-inset-bottom));
+    box-sizing: border-box;
+    gap: 12px;
+  }
+  .top {
+    height: var(--topH);
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .card {
+    border: 1px solid #ddd;
+    border-radius: 14px;
+    padding: 16px;
+  }
+  h1 { font-size: 18px; margin: 0 0 10px; }
+  select, button { font-size: 16px; padding: 10px; margin-top: 10px; width: 100%; }
   .q { font-size: 24px; margin-top: 14px; white-space: pre-line; }
   .a { font-size: 24px; margin-top: 14px; visibility: hidden; }
   .err { font-size: 14px; margin-top: 10px; color: #b00020; white-space: pre-line; }
+
+  .bottom {
+    height: var(--bottomH);
+    border: 1px solid #ddd;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #f7f7f7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .bottom img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* 切れずに収まる */
+    display: block;
+  }
 </style>
 </head>
 <body>
-<div class="card">
-  <h1>ダイアトニック・フラッシュカード</h1>
+<div class="app">
 
-  <label for="keySelect">キー選択</label><br>
-  <select id="keySelect">
-    <option value="ALL">全キー</option>
-    <option value="F">F</option>
-    <option value="C">C</option>
-    <option value="G">G</option>
-    <option value="D">D</option>
-    <option value="A">A</option>
-    <option value="E">E</option>
-    <option value="B">B</option>
-    <option value="Gb">Gb</option>
-    <option value="Db">Db</option>
-    <option value="Ab">Ab</option>
-    <option value="Eb">Eb</option>
-    <option value="Bb">Bb</option>
-  </select>
+  <div class="top">
+    <div class="card">
+      <h1>ダイアトニック・フラッシュカード</h1>
 
-  <div class="q" id="question"></div>
-  <div class="a" id="answer"></div>
-  <div class="err" id="error"></div>
+      <label for="keySelect">キー選択</label><br>
+      <select id="keySelect">
+        <option value="ALL">全キー</option>
+        <option value="F">F</option>
+        <option value="C">C</option>
+        <option value="G">G</option>
+        <option value="D">D</option>
+        <option value="A">A</option>
+        <option value="E">E</option>
+        <option value="B">B</option>
+        <option value="Gb">Gb</option>
+        <option value="Db">Db</option>
+        <option value="Ab">Ab</option>
+        <option value="Eb">Eb</option>
+        <option value="Bb">Bb</option>
+      </select>
 
-  <!-- ボタンは常に1つ -->
-  <button id="actionBtn" onclick="action()">答え</button>
+      <div class="q" id="question"></div>
+      <div class="a" id="answer"></div>
+      <div class="err" id="error"></div>
+
+      <button id="actionBtn" onclick="action()">答え</button>
+    </div>
+  </div>
+
+  <!-- 下半分：ヒント画像（hint.png を置く） -->
+  <div class="bottom" aria-label="ヒント">
+    <img src="hint.png" alt="Circle of fifths hint">
+  </div>
+
 </div>
 
 <script>
@@ -62,10 +115,9 @@
   };
 
   const degrees = ["I","ii","iii","IV","V","vi","vii°"];
-
   let currentKey = null;
   let currentDegree = null;
-  let revealed = false; // いま答え表示中か
+  let revealed = false;
 
   function pickKey() {
     const sel = document.getElementById("keySelect").value;
@@ -94,21 +146,18 @@
       document.getElementById("answer").textContent = row[currentDegree];
     }
 
-    // 初期状態：答えは隠す／ボタンは「答え」
     revealed = false;
     document.getElementById("answer").style.visibility = "hidden";
     document.getElementById("actionBtn").textContent = "答え";
   }
 
   function action() {
-    // まだ隠れている → 表示してボタンを「次へ」に
     if (!revealed) {
       document.getElementById("answer").style.visibility = "visible";
       revealed = true;
       document.getElementById("actionBtn").textContent = "次へ";
       return;
     }
-    // 表示中 → 次のカードへ
     nextCard();
   }
 
